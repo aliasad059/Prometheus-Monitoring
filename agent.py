@@ -21,8 +21,24 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     while True:
         print('Sending data...')
         data = get_sys_data()
-        s.sendall(json.dumps(data).encode('utf-8')) 
-        print('Data sent')
-        res = s.recv(1024)
-        print('Server response: '+res.decode('utf-8'))
-        time.sleep(SEND_DATA_INTERVAL)
+        try :
+            s.sendall(json.dumps(data).encode('utf-8')) 
+            print('Data sent')
+            res = s.recv(1024)
+            print('Server response: '+res.decode('utf-8'))    
+        except socket.error as e:
+            connected = False
+            print('Connection lost')
+            print('Error: '+str(e))
+            print('Trying to reconnect...')
+
+            connected = False
+            while not connected: # try to reconnect
+                try:
+                    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    s.connect((HOST, PORT))
+                    connected = True
+                    print('Connected')
+                except socket.error as e:
+                    print('Error: '+str(e))
+                    time.sleep(1)
