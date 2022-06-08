@@ -4,7 +4,7 @@ import json
 import time
 
 HOST = '127.0.0.1'
-PORT = 12345
+PORT = 1234
 SEND_DATA_INTERVAL = 5
 
 def get_sys_data():
@@ -12,7 +12,7 @@ def get_sys_data():
         "cpu_freq": psutil.cpu_freq().current,
         "memory_available": psutil.virtual_memory().available,
         "disk_usage_percent": psutil.disk_usage('/').percent,
-        "battery": psutil.sensors_battery().percent
+        "battery_percent": psutil.sensors_battery().percent
     }
     return data
 
@@ -26,6 +26,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             print('Data sent')
             res = s.recv(1024)
             print('Server response: '+res.decode('utf-8'))    
+            time.sleep(SEND_DATA_INTERVAL)
         except socket.error as e:
             connected = False
             print('Connection lost')
