@@ -5,14 +5,21 @@ from _thread import *
 HOST = '127.0.0.1'
 PORT = 12345
 
-def client_handler_thread(conn, agent_id):
+def client_handler_thread(conn, agent_id, print_agent_data=False):
     with conn:
         while True:
-            data = conn.recv(1024)
-            if not data:
+            try:
+                data = conn.recv(1024)
+                if not data:
+                    break
+            except:
                 break
-            response = 'Server response: ' + data.decode('utf-8')
-            conn.sendall(str.encode(response))
+            
+            conn.sendall('OK'.encode('utf-8'))
+
+            if print_agent_data:
+                print('Agent {}: {}'.format(agent_id, data.decode('utf-8')))
+                
     print('Agent ' + str(agent_id) + ' disconnected')
         
 if __name__ == '__main__':
